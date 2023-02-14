@@ -37,7 +37,9 @@ struct UsersView: View {
   @State private var users: [User] = []
   @State private var showingUserErrorAlert = false
   @EnvironmentObject var auth: Auth
-
+  
+  let usersRequest = ResourceRequest<User>(resourcePath: "users")
+  
   var body: some View {
     NavigationView {
       List(users, id: \.id) { user in
@@ -77,9 +79,21 @@ struct UsersView: View {
       Alert(title: Text("Error"), message: Text("There was an error getting the users"))
     }
   }
-
+  
   func loadData() {
-    
+    usersRequest.getAll { userResult in
+      switch userResult {
+      case .failure:
+        DispatchQueue.main.async {
+          self.showingUserErrorAlert = true
+        }
+      case .success(let users):
+        DispatchQueue.main.async {
+          self.users = users
+        }
+      }
+      
+    }
   }
 }
 

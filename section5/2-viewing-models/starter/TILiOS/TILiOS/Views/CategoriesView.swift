@@ -36,6 +36,7 @@ struct CategoriesView: View {
   @State private var showingSheet = false
   @State private var categories: [Category] = []
   @State private var showingCategoryErrorAlert = false
+  let categoriesRequest = ResourceRequest<Category>(resourcePath: "categories")
 
   var body: some View {
     NavigationView {
@@ -64,10 +65,20 @@ struct CategoriesView: View {
   }
 
   func loadData() {
-
+    categoriesRequest.getAll { categoryResult in
+      switch categoryResult {
+      case .failure:
+        DispatchQueue.main.async {
+          self.showingCategoryErrorAlert = true
+        }
+      case .success(let categories):
+        DispatchQueue.main.async {
+          self.categories = categories
+        }
+      }
+    }
   }
 }
-
 struct CategoriesView_Previews: PreviewProvider {
   static var previews: some View {
     CategoriesView()

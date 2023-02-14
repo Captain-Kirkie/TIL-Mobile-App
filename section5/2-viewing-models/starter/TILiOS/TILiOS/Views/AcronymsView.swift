@@ -36,12 +36,19 @@ struct AcronymsView: View {
   @State private var showingSheet = false
   @State private var showingAcronymErrorAlert = false
   @EnvironmentObject var auth: Auth
+  @State private var acronyms: [Acronym] = []
+  let acronymsRequest = ResourceRequest<Acronym>(resourcePath: "acronyms")
   
   var body: some View {
     NavigationView {
       List {
         // swiftlint:disable:next trailing_closure
-                
+        ForEach(acronyms, id: \.id) { acronym in
+          VStack(alignment: .leading) {
+            Text(acronym.short).font(.title2)
+            Text(acronym.long).font(.caption)
+          }
+        }
       }
       .navigationTitle("Acronyms")
       .toolbar {
@@ -65,12 +72,23 @@ struct AcronymsView: View {
   }
   
   func loadData() {
-    
+    acronymsRequest.getAll{ acronymResult in
+      switch acronymResult {
+      case .failure:
+        DispatchQueue.main.async {
+          self.showingAcronymErrorAlert = true
+        }
+      case .success(let acronyms):
+        DispatchQueue.main.async {
+          self.acronyms = acronyms
+        }
+      }
+    }
   }
 }
-
-struct AcronymsView_Previews: PreviewProvider {
-  static var previews: some View {
-    AcronymsView()
+  
+  struct AcronymsView_Previews: PreviewProvider {
+    static var previews: some View {
+      AcronymsView()
+    }
   }
-}
