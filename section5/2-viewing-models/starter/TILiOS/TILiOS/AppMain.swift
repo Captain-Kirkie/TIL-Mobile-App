@@ -36,10 +36,10 @@ import SwiftUI
 struct AppMain: App {
   @StateObject
   var auth = Auth()
-
+  
   var body: some Scene {
     WindowGroup {
-//      if auth.isLoggedIn {
+      if auth.isLoggedIn {
         TabView {
           AcronymsView()
             .tabItem {
@@ -54,10 +54,10 @@ struct AppMain: App {
               Label("Categories", systemImage: "tag.fill")
             }
         }
-//        .environmentObject(auth)
-//      } else {
-//        LoginView().environmentObject(auth)
-//      }
+        .environmentObject(auth)
+      } else {
+        LoginView().environmentObject(auth)
+      }
     }
   }
 }

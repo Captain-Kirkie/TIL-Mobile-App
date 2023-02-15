@@ -68,7 +68,17 @@ struct LoginView: View {
   }
 
   func login() {
-    
+    auth.login(username: username, password: password) { result in
+      switch result {
+      case .success:
+        break
+      case .failure:
+        DispatchQueue.main.async {
+          self.showingLoginErrorAlert = true
+        }
+      }
+      
+    }
   }
 }
 
